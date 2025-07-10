@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
 
@@ -43,11 +43,8 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set());
   const [paginateCount, setPaginateCount] = useState(10);
-  const [phoneSearch, setPhoneSearch] = useState('');
-  const [nameSearch, setNameSearch] = useState('');
-  const [searchTrigger, setSearchTrigger] = useState(0);
 
-  const fetchData = useCallback(async (page = 1) => {
+  const fetchData = async (page = 1) => {
     const token = localStorage.getItem('authToken');
     if (!token) {
       router.push('/login');
@@ -56,42 +53,12 @@ export default function Home() {
 
     setLoading(true);
     try {
-      let url = `${process.env.NEXT_PUBLIC_API_BASE}/api/v1/fayda-customers?page=${page}&paginate=${paginateCount}`;
-      
-      if (phoneSearch) {
-        url += `&phone_number_search=${encodeURIComponent(phoneSearch)}`;
-      }
-      
-      if (nameSearch) {
-        url += `&name_search=${encodeURIComponent(nameSearch)}`;
-      }
-
-      const res = await fetch(url, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/fayda-customers?page=${page}&paginate=${paginateCount}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      
-      //
-      // if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
-      // Handle unauthorized cases
-      if (res.status === 401 || res.status === 403) {
-        console.warn('Unauthorized access - redirecting to login:', {
-          status: res.status,
-        });
-        router.push('/login');
-        return;
-      }
-
-      // Handle other non-successful responses
-      if (!res.ok) {
-        const errorBody = await res.text(); // Optional: parse response error body safely
-        // console.log('Dashboard fetch failed:', res.status, errorBody);
-        console.warn('Fayda users fetch failed:', res.status, errorBody);
-        router.push('/login');
-        return;
-      }
-      //
+      if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
       const json = await res.json();
       setUsers(json.data);
       setMeta(json.meta);
@@ -101,51 +68,11 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
-  }, [paginateCount, phoneSearch, nameSearch, router]);
-
-  // Debounce search implementation
-  useEffect(() => {
-    //
-    const token = localStorage.getItem('authToken');
-    if (!token || typeof token !== 'string') {
-      console.warn('Invalid or missing token');
-      router.push('/login');
-      return;
-    }
-    //
-    const handler = setTimeout(() => {
-      setSearchTrigger(prev => prev + 1);
-    }, 500);
-
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [phoneSearch, nameSearch]);
+  };
 
   useEffect(() => {
-    //
-    const token = localStorage.getItem('authToken');
-    if (!token || typeof token !== 'string') {
-      console.warn('Invalid or missing token');
-      router.push('/login');
-      return;
-    }
-    //
-    setCurrentPage(1);
-    fetchData(1);
-  }, [searchTrigger]);
-
-  useEffect(() => {
-    //
-    const token = localStorage.getItem('authToken');
-    if (!token || typeof token !== 'string') {
-      console.warn('Invalid or missing token');
-      router.push('/login');
-      return;
-    }
-    //
     fetchData(currentPage);
-  }, [currentPage, paginateCount, fetchData]);
+  }, [currentPage, paginateCount]);
 
   const toggleRow = (id: number) => {
     setExpandedRows(prev => {
@@ -159,17 +86,6 @@ export default function Home() {
     if (page !== currentPage) setCurrentPage(page);
   };
 
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setSearchTrigger(prev => prev + 1);
-  };
-
-  const handleClearSearch = () => {
-    setPhoneSearch('');
-    setNameSearch('');
-    setSearchTrigger(prev => prev + 1);
-  };
-
   const renderValue = (value: any) => (value === null || value === undefined ? 'N/A' : value);
 
   return (
@@ -178,76 +94,21 @@ export default function Home() {
         <h1 className="text-2xl sm:text-3xl font-bold text-center">Fayda Users List</h1>
       </header>
 
-      {/* Search Form */}
-      <div className="mb-6 bg-gray-800 p-4 rounded-lg">
-        <form onSubmit={handleSearchSubmit} className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div>
-            <label className="block text-sm mb-1">Search by Phone</label>
-            <input
-              type="text"
-              value={phoneSearch}
-              onChange={(e) => setPhoneSearch(e.target.value)}
-              className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-sm"
-              placeholder="Enter phone number"
-            />
-          </div>
-          
-          <div>
-            <label className="block text-sm mb-1">Search by Name</label>
-            <input
-              type="text"
-              value={nameSearch}
-              onChange={(e) => setNameSearch(e.target.value)}
-              className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-sm"
-              placeholder="Enter name"
-            />
-          </div>
-          
-          <div className="flex items-end space-x-2">
-            <button
-              type="submit"
-              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm"
-            >
-              Search
-            </button>
-            <button
-              type="button"
-              onClick={handleClearSearch}
-              className="flex-1 bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded text-sm"
-            >
-              Clear
-            </button>
-          </div>
-        </form>
-      </div>
-
-      <div className="mb-6 flex flex-col sm:flex-row justify-between items-center">
-        <div className="mb-4 sm:mb-0">
-          <label className="mr-2 text-sm">Items per page:</label>
-          <select
-            className="bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm"
-            value={paginateCount}
-            onChange={(e) => setPaginateCount(Number(e.target.value))}
-          >
-            {[3, 5, 10, 20, 50].map(n => (
-              <option key={n} value={n}>{n}</option>
-            ))}
-          </select>
-        </div>
-        
-        {meta && (
-          <div className="text-sm text-gray-400">
-            Showing {meta.from} to {meta.to} of {meta.total} results
-          </div>
-        )}
+      <div className="mb-6 text-center">
+        <label className="mr-2 text-sm">Items per page:</label>
+        <select
+          className="bg-gray-800 border border-gray-600 rounded px-2 py-1 text-sm"
+          value={paginateCount}
+          onChange={(e) => setPaginateCount(Number(e.target.value))}
+        >
+          {[3, 5, 10, 20, 50].map(n => (
+            <option key={n} value={n}>{n}</option>
+          ))}
+        </select>
       </div>
 
       {loading ? (
-        <div className="text-center text-gray-400 py-8">Loading users...</div>
-      ) : users.length === 0 ? (
-        <div className="text-center text-gray-400 py-8">
-          No users found. {phoneSearch || nameSearch ? 'Try different search terms.' : ''}
-        </div>
+        <div className="text-center text-gray-400">Loading...</div>
       ) : (
         <div className="space-y-6">
           {users.map((user) => (
