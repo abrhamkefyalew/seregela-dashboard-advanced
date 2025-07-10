@@ -126,43 +126,43 @@ export default function Home() {
                         {/* Row 1 */}
                         <div className="border-b border-gray-600 p-3 border-r border-gray-600">
                           <div className="font-semibold text-gray-400">Name</div>
-                          <div className="break-words">{renderValue(user.name)}</div>
+                          <div className="truncate" title={user.name}>{renderValue(user.name)}</div>
                         </div>
                         <div className="border-b border-gray-600 p-3 border-r border-gray-600">
                           <div className="font-semibold text-gray-400">Phone</div>
-                          <div className="break-words">{renderValue(user.phone_number)}</div>
+                          <div className="truncate" title={user.phone_number}>{renderValue(user.phone_number)}</div>
                         </div>
                         <div className="border-b border-gray-600 p-3">
                           <div className="font-semibold text-gray-400">Gender</div>
-                          <div className="break-words">{renderValue(user.gender)}</div>
+                          <div>{renderValue(user.gender)}</div>
                         </div>
 
                         {/* Row 2 */}
                         <div className="border-b border-gray-600 p-3 border-r border-gray-600">
                           <div className="font-semibold text-gray-400">Email</div>
-                          <div className="break-words">{renderValue(user.email)}</div>
+                          <div className="truncate" title={user.email || 'N/A'}>{renderValue(user.email)}</div>
                         </div>
                         <div className="border-b border-gray-600 p-3 border-r border-gray-600">
                           <div className="font-semibold text-gray-400">Birthdate</div>
-                          <div className="break-words">{renderValue(user.birthdate)}</div>
+                          <div>{renderValue(user.birthdate)}</div>
                         </div>
                         <div className="border-b border-gray-600 p-3">
                           <div className="font-semibold text-gray-400">Nationality</div>
-                          <div className="break-words">{renderValue(user.nationality)}</div>
+                          <div>{renderValue(user.nationality)}</div>
                         </div>
 
                         {/* Row 3 */}
                         <div className="p-3 border-r border-gray-600">
                           <div className="font-semibold text-gray-400">Sub</div>
-                          <div className="break-words">{renderValue(user.sub)}</div>
+                          <div className="truncate" title={user.sub}>{renderValue(user.sub)}</div>
                         </div>
                         <div className="p-3 border-r border-gray-600">
                           <div className="font-semibold text-gray-400">Verified</div>
-                          <div className="break-words">{renderValue(user.is_verified)}</div>
+                          <div>{renderValue(user.is_verified)}</div>
                         </div>
                         <div className="p-3">
                           <div className="font-semibold text-gray-400">Status</div>
-                          <div className="break-words">{renderValue(user.residence_status)}</div>
+                          <div>{renderValue(user.residence_status)}</div>
                         </div>
 
                         {/* Address Section - Full width */}
@@ -171,15 +171,15 @@ export default function Home() {
                           <div className="grid grid-cols-3 gap-2 text-sm bg-gray-700 rounded-md p-2 border border-gray-600">
                             <div>
                               <div className="font-semibold text-gray-400">Region</div>
-                              <div className="break-words">{renderValue(user.address.region)}</div>
+                              <div>{renderValue(user.address.region)}</div>
                             </div>
                             <div>
                               <div className="font-semibold text-gray-400">Zone</div>
-                              <div className="break-words">{renderValue(user.address.zone)}</div>
+                              <div>{renderValue(user.address.zone)}</div>
                             </div>
                             <div>
                               <div className="font-semibold text-gray-400">Woreda</div>
-                              <div className="break-words">{renderValue(user.address.woreda)}</div>
+                              <div>{renderValue(user.address.woreda)}</div>
                             </div>
                           </div>
                         </div>
@@ -215,7 +215,7 @@ export default function Home() {
                         <tbody>
                           <tr>
                             {Object.values(user.user).map((val, i) => (
-                              <td key={i} className="px-3 py-2 border-b border-gray-600 break-words">
+                              <td key={i} className="px-3 py-2 border-b border-gray-600">
                                 {renderValue(val)}
                               </td>
                             ))}

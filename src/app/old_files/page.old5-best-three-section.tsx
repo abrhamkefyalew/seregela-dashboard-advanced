@@ -89,9 +89,9 @@ export default function Home() {
   const renderValue = (value: any) => (value === null || value === undefined ? 'N/A' : value);
 
   return (
-    <main className="min-h-screen bg-gray-900 text-white p-4 sm:p-6">
+    <main className="min-h-screen bg-gray-900 text-white p-6">
       <header className="mb-6 py-4 border-b border-gray-700">
-        <h1 className="text-2xl sm:text-3xl font-bold text-center">Fayda Users List</h1>
+        <h1 className="text-3xl font-bold text-center">Fayda Users List</h1>
       </header>
 
       <div className="mb-6 text-center">
@@ -112,76 +112,78 @@ export default function Home() {
       ) : (
         <div className="space-y-6">
           {users.map((user) => (
-            <div key={user.id} className="bg-gray-800 p-4 sm:p-6 rounded-xl shadow">
-              <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6">
+            <div key={user.id} className="bg-gray-800 p-6 rounded-xl shadow">
+              <div className="flex items-start gap-6">
                 <img
                   src={user.picture_path}
                   alt={user.name}
-                  className="w-20 h-20 sm:w-28 sm:h-28 object-cover rounded-xl border border-gray-700 mx-auto sm:mx-0"
+                  className="w-28 h-28 object-cover rounded-xl border border-gray-700"
                 />
-                <div className="w-full min-w-0">
-                  <div className="overflow-x-auto">
-                    <div className="inline-block min-w-full align-middle">
-                      <div className="grid grid-cols-3 gap-0 text-sm border border-gray-600 rounded-lg" style={{ minWidth: '650px' }}>
-                        {/* Row 1 */}
-                        <div className="border-b border-gray-600 p-3 border-r border-gray-600">
+                <div className="w-full">
+                  <div className="grid grid-cols-2 gap-4 text-sm border border-gray-600 rounded-lg p-4">
+                    {/* Row 1 */}
+                    <div className="border-b border-gray-600 pb-2">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="border-r border-gray-600 pr-4">
                           <div className="font-semibold text-gray-400">Name</div>
-                          <div className="break-words">{renderValue(user.name)}</div>
+                          <div className="truncate" title={user.name}>{renderValue(user.name)}</div>
                         </div>
-                        <div className="border-b border-gray-600 p-3 border-r border-gray-600">
+                        <div>
                           <div className="font-semibold text-gray-400">Phone</div>
-                          <div className="break-words">{renderValue(user.phone_number)}</div>
+                          <div className="truncate" title={user.phone_number}>{renderValue(user.phone_number)}</div>
                         </div>
-                        <div className="border-b border-gray-600 p-3">
-                          <div className="font-semibold text-gray-400">Gender</div>
-                          <div className="break-words">{renderValue(user.gender)}</div>
-                        </div>
-
-                        {/* Row 2 */}
-                        <div className="border-b border-gray-600 p-3 border-r border-gray-600">
+                      </div>
+                    </div>
+                    
+                    {/* Row 2 */}
+                    <div className="border-b border-gray-600 pb-2">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="border-r border-gray-600 pr-4">
                           <div className="font-semibold text-gray-400">Email</div>
-                          <div className="break-words">{renderValue(user.email)}</div>
+                          <div className="truncate" title={user.email || 'N/A'}>{renderValue(user.email)}</div>
                         </div>
-                        <div className="border-b border-gray-600 p-3 border-r border-gray-600">
+                        <div>
                           <div className="font-semibold text-gray-400">Birthdate</div>
-                          <div className="break-words">{renderValue(user.birthdate)}</div>
+                          <div>{renderValue(user.birthdate)}</div>
                         </div>
-                        <div className="border-b border-gray-600 p-3">
+                      </div>
+                    </div>
+                    
+                    {/* Row 3 */}
+                    <div className="border-b border-gray-600 pb-2">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="border-r border-gray-600 pr-4">
+                          <div className="font-semibold text-gray-400">Gender</div>
+                          <div>{renderValue(user.gender)}</div>
+                        </div>
+                        <div>
                           <div className="font-semibold text-gray-400">Nationality</div>
-                          <div className="break-words">{renderValue(user.nationality)}</div>
+                          <div>{renderValue(user.nationality)}</div>
                         </div>
-
-                        {/* Row 3 */}
-                        <div className="p-3 border-r border-gray-600">
-                          <div className="font-semibold text-gray-400">Sub</div>
-                          <div className="break-words">{renderValue(user.sub)}</div>
+                      </div>
+                    </div>
+                    
+                    {/* Row 4 */}
+                    <div className="border-b border-gray-600 pb-2">
+                      <div className="font-semibold text-gray-400">Sub</div>
+                      <div className="truncate" title={user.sub}>{renderValue(user.sub)}</div>
+                    </div>
+                    
+                    {/* Address Section */}
+                    <div className="col-span-2">
+                      <div className="font-semibold text-gray-400 mb-1">Address</div>
+                      <div className="grid grid-cols-3 gap-2 text-sm bg-gray-700 rounded-md p-2 border border-gray-600">
+                        <div>
+                          <div className="font-semibold text-gray-400">Region</div>
+                          <div>{renderValue(user.address.region)}</div>
                         </div>
-                        <div className="p-3 border-r border-gray-600">
-                          <div className="font-semibold text-gray-400">Verified</div>
-                          <div className="break-words">{renderValue(user.is_verified)}</div>
+                        <div>
+                          <div className="font-semibold text-gray-400">Zone</div>
+                          <div>{renderValue(user.address.zone)}</div>
                         </div>
-                        <div className="p-3">
-                          <div className="font-semibold text-gray-400">Status</div>
-                          <div className="break-words">{renderValue(user.residence_status)}</div>
-                        </div>
-
-                        {/* Address Section - Full width */}
-                        <div className="col-span-3 p-3 border-t border-gray-600">
-                          <div className="font-semibold text-gray-400 mb-1">Address</div>
-                          <div className="grid grid-cols-3 gap-2 text-sm bg-gray-700 rounded-md p-2 border border-gray-600">
-                            <div>
-                              <div className="font-semibold text-gray-400">Region</div>
-                              <div className="break-words">{renderValue(user.address.region)}</div>
-                            </div>
-                            <div>
-                              <div className="font-semibold text-gray-400">Zone</div>
-                              <div className="break-words">{renderValue(user.address.zone)}</div>
-                            </div>
-                            <div>
-                              <div className="font-semibold text-gray-400">Woreda</div>
-                              <div className="break-words">{renderValue(user.address.woreda)}</div>
-                            </div>
-                          </div>
+                        <div>
+                          <div className="font-semibold text-gray-400">Woreda</div>
+                          <div>{renderValue(user.address.woreda)}</div>
                         </div>
                       </div>
                     </div>
@@ -215,7 +217,7 @@ export default function Home() {
                         <tbody>
                           <tr>
                             {Object.values(user.user).map((val, i) => (
-                              <td key={i} className="px-3 py-2 border-b border-gray-600 break-words">
+                              <td key={i} className="px-3 py-2 border-b border-gray-600">
                                 {renderValue(val)}
                               </td>
                             ))}

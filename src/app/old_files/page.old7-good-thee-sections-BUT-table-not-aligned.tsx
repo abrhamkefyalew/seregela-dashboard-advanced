@@ -121,70 +121,58 @@ export default function Home() {
                 />
                 <div className="w-full min-w-0">
                   <div className="overflow-x-auto">
-                    <div className="inline-block min-w-full align-middle">
-                      <div className="grid grid-cols-3 gap-0 text-sm border border-gray-600 rounded-lg" style={{ minWidth: '650px' }}>
+                    <table className="w-full text-sm border border-gray-600 rounded-lg" style={{ minWidth: '600px' }}>
+                      <tbody>
                         {/* Row 1 */}
-                        <div className="border-b border-gray-600 p-3 border-r border-gray-600">
-                          <div className="font-semibold text-gray-400">Name</div>
-                          <div className="break-words">{renderValue(user.name)}</div>
-                        </div>
-                        <div className="border-b border-gray-600 p-3 border-r border-gray-600">
-                          <div className="font-semibold text-gray-400">Phone</div>
-                          <div className="break-words">{renderValue(user.phone_number)}</div>
-                        </div>
-                        <div className="border-b border-gray-600 p-3">
-                          <div className="font-semibold text-gray-400">Gender</div>
-                          <div className="break-words">{renderValue(user.gender)}</div>
-                        </div>
-
+                        <tr className="border-b border-gray-600">
+                          <th className="text-left px-4 py-2 text-gray-400 border-r border-gray-600">Name</th>
+                          <td className="px-4 py-2 truncate max-w-xs" title={user.name}>{renderValue(user.name)}</td>
+                          <th className="text-left px-4 py-2 text-gray-400 border-l border-r border-gray-600">Phone</th>
+                          <td className="px-4 py-2 truncate max-w-xs" title={user.phone_number}>{renderValue(user.phone_number)}</td>
+                          <th className="text-left px-4 py-2 text-gray-400 border-l border-gray-600">Gender</th>
+                          <td className="px-4 py-2">{renderValue(user.gender)}</td>
+                        </tr>
+                        
                         {/* Row 2 */}
-                        <div className="border-b border-gray-600 p-3 border-r border-gray-600">
-                          <div className="font-semibold text-gray-400">Email</div>
-                          <div className="break-words">{renderValue(user.email)}</div>
-                        </div>
-                        <div className="border-b border-gray-600 p-3 border-r border-gray-600">
-                          <div className="font-semibold text-gray-400">Birthdate</div>
-                          <div className="break-words">{renderValue(user.birthdate)}</div>
-                        </div>
-                        <div className="border-b border-gray-600 p-3">
-                          <div className="font-semibold text-gray-400">Nationality</div>
-                          <div className="break-words">{renderValue(user.nationality)}</div>
-                        </div>
-
+                        <tr className="border-b border-gray-600">
+                          <th className="text-left px-4 py-2 text-gray-400 border-r border-gray-600">Email</th>
+                          <td className="px-4 py-2 truncate max-w-xs" title={user.email || 'N/A'}>{renderValue(user.email)}</td>
+                          <th className="text-left px-4 py-2 text-gray-400 border-l border-r border-gray-600">Birthdate</th>
+                          <td className="px-4 py-2">{renderValue(user.birthdate)}</td>
+                          <th className="text-left px-4 py-2 text-gray-400 border-l border-gray-600">Nationality</th>
+                          <td className="px-4 py-2">{renderValue(user.nationality)}</td>
+                        </tr>
+                        
                         {/* Row 3 */}
-                        <div className="p-3 border-r border-gray-600">
-                          <div className="font-semibold text-gray-400">Sub</div>
-                          <div className="break-words">{renderValue(user.sub)}</div>
-                        </div>
-                        <div className="p-3 border-r border-gray-600">
-                          <div className="font-semibold text-gray-400">Verified</div>
-                          <div className="break-words">{renderValue(user.is_verified)}</div>
-                        </div>
-                        <div className="p-3">
-                          <div className="font-semibold text-gray-400">Status</div>
-                          <div className="break-words">{renderValue(user.residence_status)}</div>
-                        </div>
-
-                        {/* Address Section - Full width */}
-                        <div className="col-span-3 p-3 border-t border-gray-600">
-                          <div className="font-semibold text-gray-400 mb-1">Address</div>
-                          <div className="grid grid-cols-3 gap-2 text-sm bg-gray-700 rounded-md p-2 border border-gray-600">
-                            <div>
-                              <div className="font-semibold text-gray-400">Region</div>
-                              <div className="break-words">{renderValue(user.address.region)}</div>
+                        <tr className="border-b border-gray-600">
+                          <th className="text-left px-4 py-2 text-gray-400 border-r border-gray-600">Sub</th>
+                          <td colSpan={3} className="px-4 py-2 truncate max-w-xl" title={user.sub}>{renderValue(user.sub)}</td>
+                          <th className="text-left px-4 py-2 text-gray-400 border-l border-gray-600">Verified</th>
+                          <td className="px-4 py-2">{renderValue(user.is_verified)}</td>
+                        </tr>
+                        
+                        {/* Address Section */}
+                        <tr>
+                          <th className="text-left px-4 py-2 text-gray-400 border-r border-gray-600 align-top">Address</th>
+                          <td colSpan={5} className="px-4 py-2">
+                            <div className="grid grid-cols-3 gap-2 text-sm bg-gray-700 rounded-md p-2 border border-gray-600">
+                              <div>
+                                <div className="font-semibold text-gray-400">Region</div>
+                                <div>{renderValue(user.address.region)}</div>
+                              </div>
+                              <div>
+                                <div className="font-semibold text-gray-400">Zone</div>
+                                <div>{renderValue(user.address.zone)}</div>
+                              </div>
+                              <div>
+                                <div className="font-semibold text-gray-400">Woreda</div>
+                                <div>{renderValue(user.address.woreda)}</div>
+                              </div>
                             </div>
-                            <div>
-                              <div className="font-semibold text-gray-400">Zone</div>
-                              <div className="break-words">{renderValue(user.address.zone)}</div>
-                            </div>
-                            <div>
-                              <div className="font-semibold text-gray-400">Woreda</div>
-                              <div className="break-words">{renderValue(user.address.woreda)}</div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
                   </div>
                   
                   <div className="mt-2 text-sm text-blue-400 cursor-pointer hover:underline" onClick={() => toggleRow(user.id)}>
@@ -215,7 +203,7 @@ export default function Home() {
                         <tbody>
                           <tr>
                             {Object.values(user.user).map((val, i) => (
-                              <td key={i} className="px-3 py-2 border-b border-gray-600 break-words">
+                              <td key={i} className="px-3 py-2 border-b border-gray-600">
                                 {renderValue(val)}
                               </td>
                             ))}
