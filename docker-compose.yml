@@ -1,7 +1,7 @@
 version: "3.9"
 
 services:
-  seregela-dashboard:
+  seregela-dashboard-advanced:
     build: .
     
     # Map host's HOST_PORT to container's CONTAINER_PORT using .env
