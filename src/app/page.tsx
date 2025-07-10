@@ -1,103 +1,230 @@
-import Image from "next/image";
+'use client';
+
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { AnimatePresence, motion } from 'framer-motion';
+
+interface Address {
+  zone: string;
+  region: string;
+  woreda: string;
+}
+
+interface UserNested {
+  [key: string]: any;
+}
+
+interface UserDetail {
+  id: number;
+  user_id: number;
+  name: string;
+  email: string | null;
+  sub: string;
+  picture: string | null;
+  picture_path: string;
+  phone_number: string;
+  birthdate: string;
+  residence_status: string | null;
+  gender: string;
+  address: Address;
+  nationality: string | null;
+  is_verified: number | null;
+  created_at: string;
+  updated_at: string;
+  deleted_at: string | null;
+  user: UserNested;
+}
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const router = useRouter();
+  const [users, setUsers] = useState<UserDetail[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [meta, setMeta] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+  const [expandedRows, setExpandedRows] = useState<Set<number>>(new Set());
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const fetchData = async (page = 1) => {
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      router.push('/login');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/api/v1/fayda-customers?page=${page}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!res.ok) throw new Error(`HTTP error: ${res.status}`);
+      const json = await res.json();
+      setUsers(json.data);
+      setMeta(json.meta);
+    } catch (e) {
+      console.error(e);
+      router.push('/login');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData(currentPage);
+  }, [currentPage]);
+
+  const toggleRow = (id: number) => {
+    setExpandedRows(prev => {
+      const newSet = new Set(prev);
+      newSet.has(id) ? newSet.delete(id) : newSet.add(id);
+      return newSet;
+    });
+  };
+
+  const handlePageChange = (page: number) => {
+    if (page !== currentPage) setCurrentPage(page);
+  };
+
+  const renderValue = (value: any) => (value === null || value === undefined ? 'N/A' : value);
+
+  return (
+    <main className="min-h-screen bg-gray-900 text-white p-6">
+      <header className="mb-6 py-4 border-b border-gray-700">
+        <h1 className="text-3xl font-bold text-center">Fayda Users List</h1>
+      </header>
+
+      {loading ? (
+        <div className="text-center text-gray-400">Loading...</div>
+      ) : (
+        <div className="space-y-6">
+          {users.map((user) => (
+            <div key={user.id} className="bg-gray-800 p-6 rounded-xl shadow">
+              <div className="flex items-start gap-6">
+                <img
+                  src={user.picture_path}
+                  alt={user.name}
+                  className="w-28 h-28 object-cover rounded-xl border border-gray-700"
+                />
+                <div className="w-full overflow-x-auto">
+                  <table className="w-full text-sm table-auto">
+                    <tbody>
+                      <tr>
+                        <th className="text-left pr-4 py-1">Name</th>
+                        <td>{renderValue(user.name)}</td>
+                        <th className="text-left pr-4 py-1">Phone</th>
+                        <td>{renderValue(user.phone_number)}</td>
+                        <th className="text-left pr-4 py-1">Email</th>
+                        <td>{renderValue(user.email)}</td>
+                      </tr>
+                      <tr>
+                        <th className="text-left pr-4 py-1">Birthdate</th>
+                        <td>{renderValue(user.birthdate)}</td>
+                        <th className="text-left pr-4 py-1">Gender</th>
+                        <td>{renderValue(user.gender)}</td>
+                        <th className="text-left pr-4 py-1">Nationality</th>
+                        <td>{renderValue(user.nationality)}</td>
+                      </tr>
+                      <tr>
+                        <th className="text-left pr-4 py-1">Sub</th>
+                        <td colSpan={5}>{renderValue(user.sub)}</td>
+                      </tr>
+                      <tr>
+                        <th className="text-left pr-4 py-1 align-top">Address</th>
+                        <td colSpan={5}>
+                          <table className="text-sm bg-gray-700 rounded-md overflow-hidden">
+                            <tbody>
+                              <tr>
+                                <th className="text-left pr-4 px-2 py-1">Region</th>
+                                <td className="px-2 py-1">{renderValue(user.address.region)}</td>
+                                <th className="text-left pr-4 px-2 py-1">Zone</th>
+                                <td className="px-2 py-1">{renderValue(user.address.zone)}</td>
+                                <th className="text-left pr-4 px-2 py-1">Woreda</th>
+                                <td className="px-2 py-1">{renderValue(user.address.woreda)}</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <div className="mt-2 text-sm text-blue-400 cursor-pointer hover:underline" onClick={() => toggleRow(user.id)}>
+                    {expandedRows.has(user.id) ? '▲ Hide Details' : '▼ Show Details'}
+                  </div>
+                </div>
+              </div>
+
+              <AnimatePresence>
+                {expandedRows.has(user.id) && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="mt-4 overflow-hidden"
+                  >
+                    <div className="overflow-x-auto">
+                      <table className="min-w-full text-sm bg-gray-700 rounded-md">
+                        <thead>
+                          <tr>
+                            {Object.keys(user.user).map((key) => (
+                              <th key={key} className="px-3 py-2 text-left border-b border-gray-600">
+                                {key}
+                              </th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            {Object.values(user.user).map((val, i) => (
+                              <td key={i} className="px-3 py-2 border-b border-gray-600">
+                                {renderValue(val)}
+                              </td>
+                            ))}
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          ))}
+
+          {/* Pagination */}
+          {meta && (
+            <div className="mt-8 flex justify-center items-center gap-2 flex-wrap">
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="px-3 py-1 border rounded hover:bg-gray-700 disabled:opacity-50"
+              >
+                Prev
+              </button>
+              {Array.from({ length: meta.last_page }, (_, i) => i + 1).map((num) => (
+                <button
+                  key={num}
+                  onClick={() => handlePageChange(num)}
+                  className={`px-3 py-1 border rounded hover:bg-gray-700 ${
+                    num === currentPage ? 'bg-blue-600 text-white' : ''
+                  }`}
+                >
+                  {num}
+                </button>
+              ))}
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === meta.last_page}
+                className="px-3 py-1 border rounded hover:bg-gray-700 disabled:opacity-50"
+              >
+                Next
+              </button>
+            </div>
+          )}
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+      )}
+
+      <footer className="mt-10 pt-6 border-t border-gray-700 text-center text-sm text-gray-400">
+        &copy; 2025 Seregela Dashboard. All rights reserved.
       </footer>
-    </div>
+    </main>
   );
 }

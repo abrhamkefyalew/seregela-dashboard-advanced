@@ -11,6 +11,7 @@
   "dependencies": {
     "cross-env": "^7.0.3",
     "dotenv": "^17.1.0",
+    "framer-motion": "^12.23.1",
     "html2pdf.js": "^0.10.3",
     "next": "15.3.5",
     "react": "^19.0.0",
